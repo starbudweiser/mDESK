@@ -15,7 +15,7 @@ final class Controller {
     private(set) var lastStatus = L("ctl.ready")
     private var finderBridge: FinderBridge?
     private var pendingAutoRestore: Task<Void, Never>?
-    private let log = Logger(subsystem: "com.stephan.deskstay", category: "controller")
+    private let log = Logger(subsystem: "com.stephan.mdesk", category: "controller")
 
     init(store: ArrangementStore) {
         self.store = store

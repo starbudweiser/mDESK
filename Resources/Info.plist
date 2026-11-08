@@ -16,7 +16,7 @@
     <key>CFBundleIconFile</key>
     <string>icon</string>
     <key>CFBundleIdentifier</key>
-    <string>com.stephan.deskstay</string>
+    <string>com.stephan.mdesk</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>

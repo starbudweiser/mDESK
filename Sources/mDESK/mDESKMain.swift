@@ -8,10 +8,10 @@ enum mDESKMain {
         #if MDESK_SELFTEST
         if SelfTest.runIfRequested(CommandLine.arguments) { return }
         #endif
-        // Après un changement d'emplacement ou de nom de l'appli : réenregistre l'ouverture à la connexion si elle est active.
-        if CommandLine.arguments.contains("--refresh-login-item") {
+        // `--login-item on|off` : (dés)enregistre l'ouverture à la connexion sans lancer l'appli (changement de nom, d'identifiant…).
+        if let i = CommandLine.arguments.firstIndex(of: "--login-item"), i + 1 < CommandLine.arguments.count {
             let service = SMAppService.mainApp
-            if service.status == .enabled { try? service.unregister(); try? service.register() }
+            if CommandLine.arguments[i + 1] == "on" { try? service.register() } else { try? service.unregister() }
             print("ouverture à la connexion : \(service.status == .enabled ? "active" : "inactive")")
             return
         }
