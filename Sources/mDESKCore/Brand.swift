@@ -3,7 +3,7 @@ import Foundation
 /// Nom de l'appli selon la règle Socle « Nom de l'appli » : tout en majuscules sauf une lettre minuscule,
 /// colorée partout où le nom est écrit dans l'interface.
 public enum Brand {
-    public static let name = "DeSKSTAY"
+    public static let name = "mDESK"
 
     /// Plages (en UTF-16, pour NSAttributedString) des lettres minuscules de chaque occurrence du nom dans `text`.
     /// Pas dans un mot, un chemin, un identifiant ni une adresse.

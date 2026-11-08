@@ -1,5 +1,5 @@
 import AppKit
-import DeskStayCore
+import mDESKCore
 
 /// Fenêtre « À propos » : version, auteurs, licence. Textes dans les fichiers de langue (L).
 /// Fenêtre à nous plutôt que le panneau standard, dont la zone de texte a une hauteur fixe qui rogne les textes longs.

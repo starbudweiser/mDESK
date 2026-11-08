@@ -1,5 +1,5 @@
 #!/bin/bash
-# Compile DeSKSTAY et produit build/DeSKSTAY.app.
+# Compile mDESK et produit build/mDESK.app.
 # Signature : certificat local stable (sign_app.sh), macOS garde ainsi les autorisations d'un build à l'autre.
 # Autre identité : SIGN_IDENTITY="<empreinte SHA-1 ou nom du certificat>" ./build.sh
 # Un build normal est déplacé dans ~/Applications/Applications Personnelles (INSTALL_DIR pour un autre dossier).
@@ -8,17 +8,17 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 SIGN_TOOL="/Volumes/SKYRIM/TOOLS/MAC/_tools/sign_app.sh"
-APP="build/DeSKSTAY.app"
+APP="build/mDESK.app"
 FLAGS=()
-[ "${SELFTEST:-0}" = "1" ] && FLAGS=(-Xswiftc -DDESKSTAY_SELFTEST)
+[ "${SELFTEST:-0}" = "1" ] && FLAGS=(-Xswiftc -DMDESK_SELFTEST)
 
 swift build -c release ${FLAGS[@]+"${FLAGS[@]}"}
-BIN="$(swift build -c release ${FLAGS[@]+"${FLAGS[@]}"} --show-bin-path)/DeSKSTAY"
+BIN="$(swift build -c release ${FLAGS[@]+"${FLAGS[@]}"} --show-bin-path)/mDESK"
 [ -x "$BIN" ] || { echo "Binaire introuvable : $BIN" >&2; exit 1; }
 
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN" "$APP/Contents/MacOS/DeSKSTAY"
+cp "$BIN" "$APP/Contents/MacOS/mDESK"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 cp -R Resources/*.lproj "$APP/Contents/Resources/" # textes fr, en, es, it
 cp assets/icon.icns "$APP/Contents/Resources/icon.icns"
@@ -34,10 +34,10 @@ fi
 if [ "${SELFTEST:-0}" != "1" ]; then
     DEST="${INSTALL_DIR:-$HOME/Applications/Applications Personnelles}"
     mkdir -p "$DEST"
-    pgrep -x DeSKSTAY >/dev/null && echo "ATTENTION : DeSKSTAY tourne, relancez-le pour utiliser la nouvelle version." >&2
-    rm -rf "$DEST/DeSKSTAY.app" "$DEST/DeskStay.app" # DeskStay.app : ancien nom
-    mv "$APP" "$DEST/DeSKSTAY.app"
-    echo "OK : $DEST/DeSKSTAY.app"
+    pgrep -x mDESK >/dev/null && echo "ATTENTION : mDESK tourne, relancez-le pour utiliser la nouvelle version." >&2
+    rm -rf "$DEST/mDESK.app" "$DEST/DeSKSTAY.app" "$DEST/DeskStay.app" # DeSKSTAY.app, DeskStay.app : anciens noms
+    mv "$APP" "$DEST/mDESK.app"
+    echo "OK : $DEST/mDESK.app"
 else
     echo "OK : $(pwd)/$APP (build d'essai)"
 fi

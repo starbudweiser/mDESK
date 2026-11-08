@@ -1,6 +1,6 @@
 import AppKit
 import ApplicationServices
-import DeskStayCore
+import mDESKCore
 
 /// Capture et restauration des fenêtres d'applications via l'API Accessibilité.
 @MainActor
@@ -33,7 +33,7 @@ enum WindowBridge {
     /// Fenêtres standard, non réduites, de l'espace courant.
     static func windows(of app: NSRunningApplication) -> [LiveWindow] {
         let axApp = AXUIElementCreateApplication(app.processIdentifier)
-        AXUIElementSetMessagingTimeout(axApp, 1.0) // une app figée ne bloque pas DeSKSTAY
+        AXUIElementSetMessagingTimeout(axApp, 1.0) // une app figée ne bloque pas mDESK
         guard let list: [AXUIElement] = attribute(axApp, kAXWindowsAttribute) else { return [] }
         var result: [LiveWindow] = []
         for window in list {

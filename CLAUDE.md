@@ -1,4 +1,4 @@
-# DeSKSTAY — contexte projet
+# mDESK — contexte projet
 
 App macOS personnelle de barre de menus qui combine **Desktop Icon Manager** (positions des icônes du Bureau et des fenêtres Finder, arrangements multiples, positions relatives à l'écran) et **Stay** (positions des fenêtres d'applications par combinaison d'écrans, restauration automatique).
 
@@ -13,14 +13,14 @@ Références :
 - Langage : Swift uniquement (option Rust étudiée et écartée le 31/10/2026).
 
 ## Architecture
-- `Sources/DeskStayCore` : logique pure sans AppKit (modèles, géométrie, fusion, sélection, persistance JSON). **Toute logique testable va ici.**
-- `Sources/DeskStay` : app AppKit (`LSUIElement`)
+- `Sources/mDESKCore` : logique pure sans AppKit (modèles, géométrie, fusion, sélection, persistance JSON). **Toute logique testable va ici.**
+- `Sources/mDESK` : app AppKit (`LSUIElement`)
   - `FinderBridge` : AppleScript (NSAppleScript, thread principal) ; les données passent en paramètres de gestionnaires, jamais concaténées dans le source.
   - `WindowBridge` : API Accessibilité (AXUIElement) pour les fenêtres d'apps (le Finder est exclu, géré par AppleScript).
   - `IconHider` : masquage par fenêtres de fond d'écran au niveau `desktopIconWindow + 1` (aucun réglage Finder modifié).
   - `Controller` : mémoriser / restaurer / restauration automatique (temporisée).
   - `AppDelegate` : menu de barre de menus, événements (écrans, réveil, déverrouillage), ouverture à la connexion (SMAppService).
-- Données : `~/Library/Application Support/DeskStay/arrangements.json` (écriture atomique + `.bak`, fichier illisible mis de côté, version plus récente jamais écrasée).
+- Données : `~/Library/Application Support/mDESK/arrangements.json` (écriture atomique + `.bak`, fichier illisible mis de côté, version plus récente jamais écrasée).
 
 ## Faits vérifiés sur ce Mac
 - `desktop position` du Finder = coordonnées Quartz globales (bounds du Bureau = union des écrans, 0,0,4520,1969).
@@ -31,14 +31,14 @@ Références :
 ## Commandes
 - Compiler : `swift build`
 - Tests : `swift test` (21 tests XCTest, tous verts au 31/10/2026)
-- App : `./build.sh` → `~/Applications/Applications Personnelles/DeSKSTAY.app` (déplacée, pas de copie dans build/) (signé via `sign_app.sh`, certificat local stable ; `SIGN_IDENTITY=<SHA-1> ./build.sh` pour un autre certificat)
-- Langues : fr, en, es, it, mêmes clés partout, anglais si la langue du système est autre. Textes dans `tools/strings_table.py` ; `python3 tools/gen_strings.py` génère `Resources/<langue>.lproj/{Localizable,InfoPlist}.strings` (copiés par `build.sh`). Dans le code : `L("clé", args)` (`%@`, `%ld`), jamais de texte en dur ; `LocalizationTests` vérifie clés, formats et usage. Essai : `DeSKSTAY --selftest <dir> events -AppleLanguages "(es)"`.
+- App : `./build.sh` → `~/Applications/Applications Personnelles/mDESK.app` (déplacée, pas de copie dans build/) (signé via `sign_app.sh`, certificat local stable ; `SIGN_IDENTITY=<SHA-1> ./build.sh` pour un autre certificat)
+- Langues : fr, en, es, it, mêmes clés partout, anglais si la langue du système est autre. Textes dans `tools/strings_table.py` ; `python3 tools/gen_strings.py` génère `Resources/<langue>.lproj/{Localizable,InfoPlist}.strings` (copiés par `build.sh`). Dans le code : `L("clé", args)` (`%@`, `%ld`), jamais de texte en dur ; `LocalizationTests` vérifie clés, formats et usage. Essai : `mDESK --selftest <dir> events -AppleLanguages "(es)"`.
 - À propos : `About.swift`, licence MIT dans `LICENSE`, auteurs « Starbudweiser & Claude Code ».
 - Icône : `assets/make_icon.py` (PyQt6, couleurs Socle) produit `assets/icon.icns` ; `build.sh` la copie dans l'app.
-- Essais réels : `SELFTEST=1 ./build.sh` (reste dans build/), puis `build/DeSKSTAY.app/Contents/MacOS/DeSKSTAY --selftest <dossier de données> status|memorize|restore|hide|auto|events` (code absent des builds normaux)
+- Essais réels : `SELFTEST=1 ./build.sh` (reste dans build/), puis `build/mDESK.app/Contents/MacOS/mDESK --selftest <dossier de données> status|memorize|restore|hide|auto|events` (code absent des builds normaux)
 
 ## Points ouverts
-- **Notarisation faite le 01/11/2026** : `./release.sh` signe avec l'identité Developer ID `CB7AAA54…` (trousseau `skyrim-signing`, runtime renforcé, entitlement `com.apple.security.automation.apple-events`), notarise (`xcrun notarytool`, profil de trousseau `deskstay-notary`), agrafe et vérifie (`spctl`) ; résultat `dist/DeSKSTAY.zip` (ignoré par git). L'autre identité `B675FD78…` échoue (`errSecInternalComponent`, trousseau « session » : son mot de passe ne correspond pas à celui de la session) ; ne jamais réinitialiser le trousseau sans accord explicite.
+- **Notarisation** (faite le 01/11/2026, refaite via les outils communs le 08/11/2026) : `./release.sh` compile, installe, puis `_tools/notarize_app.sh` signe en Developer ID (runtime renforcé, entitlement `Resources/mDESK.entitlements` = Apple Events), notarise (profil notarytool « Applications »), agrafe ; résultat `_tools/notarized/mDESK.zip`. L'identité Developer ID `B675FD78…` du trousseau « session » échoue (`errSecInternalComponent`) ; ne jamais réinitialiser un trousseau sans accord explicite.
 - Essais réels du 31/10/2026 (via `--selftest memorize|restore all|icons|windows|app:<bundle>`) : mémoriser et restaurer séparément icônes (type DIM) et fenêtres (type Stay), une seule app, exclusion « ne pas déplacer », fenêtres Finder fermées jamais rouvertes, masquage, observateurs d'événements. OK.
 - Pas encore testé : demandes d'autorisation de l'app seule (le shell transmet les siennes), vrais événements écran / réveil / déverrouillage, clics sur le menu, ouverture à la connexion, masquage visible sur l'écran portrait (il était en plein écran).
 - Décidé le 31/10/2026 : aucune restauration automatique par défaut (écrans, réveil, ouverture : options désactivées à la Stay) ; fenêtres Finder fermées jamais rouvertes ; choix app par app (`excludedApps`) ; icônes et fenêtres mémorisées / restaurées séparément ou ensemble.
@@ -49,7 +49,7 @@ Références :
 - Ne rien présenter comme fonctionnel sans l'avoir vérifié.
 
 - Retour des icônes : instantané, comme DIM (essayé puis abandonné le 31/10/2026 : copies animées par Core Animation, trop fragiles à rendre identiques au Finder). Seules les icônes pas déjà en place sont déplacées (le Finder met ~17 ms par icône).
-## Nom de l'appli (règle Socle « Nom de l'appli », 01/11/2026)
-- Nom affiché : **DeSKSTAY** (majuscules, « e » minuscule). Le « e » est coloré (ambre du logo, `BrandStyle.color`) partout dans l'interface : fenêtre À propos et dialogues (`BrandStyle.apply(to:)`). Texte brut dans les entrées du menu (choix du 04/11/2026), la barre de titre, la barre des menus et les notifications système (limite du système). `Brand.name` / `Brand.lowercaseRanges` (DeskStayCore) portent la règle, testée dans `BrandTests`.
-- Paquet `DeSKSTAY.app`, binaire `DeSKSTAY` (produit SwiftPM `.executable`). Restent en `DeskStay` (identifiants, pas le nom affiché) : cibles/dossiers SwiftPM, dépôt GitHub, identifiant de paquet `com.stephan.deskstay` (garde les autorisations macOS), dossier de données `~/Library/Application Support/DeskStay`.
-- Vitesse du clic « Restaurer les icônes » (04/11/2026) : événements Apple bruts envoyés en parallèle (`DesktopMover`, 3 connexions, repli AppleScript pour ce qu'ils ne placent pas) ; les icônes absentes du Bureau sont ignorées (elles coûtaient ~40 ms chacune à chaque clic). Test réel : `--selftest <dir> icontest <N>` déplace N icônes puis chronomètre le clic (1 icône 185 ms, 10 : 218 ms, 49 : 435 ms, contre 650 à 1400 ms avant) et vérifie les positions ; seuils 300 ms (≤10) et 600 ms (49). Ne jamais « set desktop position of every item … to {une position} » : toutes les icônes s'empilent.
+## Nom de l'appli (règle Socle « Nom de l'appli »)
+- Nom : **mDESK** (majuscules, « m » minuscule ; ex-DeskStay puis DeSKSTAY, renommé le 08/11/2026). Le « m » est coloré (ambre du logo, `BrandStyle.color`) dans la fenêtre À propos et les dialogues (`BrandStyle.apply(to:)`) ; texte normal dans les menus déroulants (règle du 04/11/2026), la barre de titre et les notifications système. `Brand.name` / `Brand.lowercaseRanges` (mDESKCore) portent la règle, testée dans `BrandTests`.
+- Paquet `mDESK.app`, binaire `mDESK`, cibles SwiftPM `mDESK` / `mDESKCore` / `mDESKCoreTests`, dépôt GitHub `starbudweiser/mDESK`, dossier du projet `/Volumes/OWC 6To/TAF/DEV/mDESK`, données `~/Library/Application Support/mDESK` (l'ancien dossier `DeskStay` est déplacé au premier lancement). Reste inchangé : l'identifiant de paquet `com.stephan.deskstay` (garde les autorisations macOS et l'ouverture à la connexion). `mDESK --refresh-login-item` réenregistre l'ouverture à la connexion après un changement de nom ou d'emplacement.
+- Publication : `./release.sh` (outils communs `_tools/notarize_app.sh`, profil « Applications ») ; `_tools/release_app.sh mDESK` pour une release GitHub.

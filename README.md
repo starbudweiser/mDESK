@@ -1,10 +1,10 @@
-# DeSKSTAY
+# mDESK
 
 A menu-bar app for macOS that remembers and restores where things sit on your screens: **desktop icons** (like Desktop Icon Manager) and **application windows** (like Stay), per display combination.
 
 ## About
 
-DeSKSTAY is a personal tool by **Starbudweiser & Claude Code (Anthropic)**, released under the MIT license. It merges the ideas of [Desktop Icon Manager](https://www.parker9.com/desktopIconManager4.html) and [Stay](https://cordlessdog.com/stay/) and is not affiliated with their authors. It is provided as is, without warranty. The same information is available in the app itself: menu bar icon › *About DeSKSTAY*.
+mDESK is a personal tool by **Starbudweiser & Claude Code (Anthropic)**, released under the MIT license. It merges the ideas of [Desktop Icon Manager](https://www.parker9.com/desktopIconManager4.html) and [Stay](https://cordlessdog.com/stay/) and is not affiliated with their authors. It is provided as is, without warranty. The same information is available in the app itself: menu bar icon › *About mDESK*.
 
 ## Features
 
@@ -22,11 +22,11 @@ macOS 14 or later. On first use macOS asks for two permissions: Automation (to c
 
 ```bash
 swift test        # unit tests
-./build.sh        # builds, signs and installs DeSKSTAY.app
+./build.sh        # builds, signs and installs mDESK.app
 ./release.sh      # Developer ID signature, archive and notarization (see the script header)
 ```
 
-Data is kept in `~/Library/Application Support/DeskStay/arrangements.json`.
+Data is kept in `~/Library/Application Support/mDESK/arrangements.json`.
 
 ## License
 

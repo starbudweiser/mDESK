@@ -1,5 +1,5 @@
 import AppKit
-import DeskStayCore
+import mDESKCore
 import os
 
 /// Orchestration : mémoriser / restaurer un arrangement, restauration automatique, persistance.

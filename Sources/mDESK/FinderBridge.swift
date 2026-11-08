@@ -1,5 +1,5 @@
 import Carbon
-import DeskStayCore
+import mDESKCore
 import Foundation
 
 enum BridgeError: LocalizedError {

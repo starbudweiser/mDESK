@@ -1,5 +1,5 @@
 import AppKit
-import DeskStayCore
+import mDESKCore
 import ServiceManagement
 
 /// Élément de menu exécutant une closure.
@@ -25,7 +25,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var statusItem: NSStatusItem?
     private(set) var controller: Controller?
     private let menu = NSMenu()
-    #if DESKSTAY_SELFTEST
+    #if MDESK_SELFTEST
     var dataDirectoryOverride: URL?
     #endif
 
@@ -33,7 +33,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         var directory = Self.dataDirectory()
-        #if DESKSTAY_SELFTEST
+        #if MDESK_SELFTEST
         if let dataDirectoryOverride { directory = dataDirectoryOverride }
         #endif
         let store = ArrangementStore(directory: directory)
@@ -48,7 +48,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         self.controller = controller
 
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        if let image = NSImage(systemSymbolName: "rectangle.3.group", accessibilityDescription: "DeSKSTAY") {
+        if let image = NSImage(systemSymbolName: "rectangle.3.group", accessibilityDescription: "mDESK") {
             image.isTemplate = true
             item.button?.image = image
         } else {
@@ -67,7 +67,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private static func dataDirectory() -> URL {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Library/Application Support")
-        return base.appendingPathComponent("DeskStay", isDirectory: true)
+        let directory = base.appendingPathComponent("mDESK", isDirectory: true)
+        // Ancien nom (DeskStay) : les arrangements existants suivent le renommage.
+        let legacy = base.appendingPathComponent("DeskStay", isDirectory: true)
+        if !FileManager.default.fileExists(atPath: directory.path), FileManager.default.fileExists(atPath: legacy.path) {
+            try? FileManager.default.moveItem(at: legacy, to: directory)
+        }
+        return directory
     }
 
     // MARK: Événements système

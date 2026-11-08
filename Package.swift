@@ -2,17 +2,17 @@
 import PackageDescription
 
 let package = Package(
-    name: "DeskStay",
+    name: "mDESK",
     platforms: [.macOS(.v14)],
     products: [
         // Le binaire (et donc le paquet .app) porte le nom de l'appli, règle Socle « Nom de l'appli ».
-        .executable(name: "DeSKSTAY", targets: ["DeskStay"]),
+        .executable(name: "mDESK", targets: ["mDESK"]),
     ],
     targets: [
         // Logique pure (sans AppKit) : modèles, géométrie, fusion, persistance. Testable.
-        .target(name: "DeskStayCore"),
+        .target(name: "mDESKCore"),
         // Application barre de menus : Finder (AppleScript), fenêtres (Accessibilité), masquage.
-        .executableTarget(name: "DeskStay", dependencies: ["DeskStayCore"]),
-        .testTarget(name: "DeskStayCoreTests", dependencies: ["DeskStayCore"]),
+        .executableTarget(name: "mDESK", dependencies: ["mDESKCore"]),
+        .testTarget(name: "mDESKCoreTests", dependencies: ["mDESKCore"]),
     ]
 )

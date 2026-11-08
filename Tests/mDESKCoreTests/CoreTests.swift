@@ -1,6 +1,6 @@
 import CoreGraphics
 import XCTest
-@testable import DeskStayCore
+@testable import mDESKCore
 
 final class GeometryTests: XCTestCase {
     let main = DisplaySnapshot(id: "MAIN", frame: CGRect(x: 0, y: 0, width: 3440, height: 1440), isMain: true)
@@ -173,7 +173,7 @@ final class StoreTests: XCTestCase {
     var dir: URL!
 
     override func setUpWithError() throws {
-        dir = FileManager.default.temporaryDirectory.appendingPathComponent("DeskStayTests-\(UUID().uuidString)")
+        dir = FileManager.default.temporaryDirectory.appendingPathComponent("mDESKTests-\(UUID().uuidString)")
     }
 
     override func tearDownWithError() throws {

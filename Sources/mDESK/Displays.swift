@@ -1,6 +1,6 @@
 import ColorSync
 import CoreGraphics
-import DeskStayCore
+import mDESKCore
 import Foundation
 
 enum Displays {

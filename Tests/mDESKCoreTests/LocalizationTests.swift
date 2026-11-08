@@ -47,7 +47,7 @@ final class LocalizationTests: XCTestCase {
         let pattern = try NSRegularExpression(pattern: #"\bL\(\s*(?:[a-z]+\s*\?\s*)?\"([A-Za-z.]+)\""#)
         let ternary = try NSRegularExpression(pattern: #"\"([a-z]+\.[A-Za-z]+)\""#)
         var used = Set<String>()
-        for folder in ["Sources/DeskStay", "Sources/DeskStayCore"] {
+        for folder in ["Sources/mDESK", "Sources/mDESKCore"] {
             let dir = root.appendingPathComponent(folder)
             for file in try FileManager.default.contentsOfDirectory(atPath: dir.path) where file.hasSuffix(".swift") {
                 let code = try String(contentsOf: dir.appendingPathComponent(file), encoding: .utf8)

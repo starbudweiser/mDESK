@@ -1,9 +1,9 @@
-#if DESKSTAY_SELFTEST
+#if MDESK_SELFTEST
 import AppKit
-import DeskStayCore
+import mDESKCore
 
 /// Pilotage sans menu pour les essais réels (build `SELFTEST=1 ./build.sh` uniquement, absent des builds normaux).
-/// `DeSKSTAY --selftest <dossier de données> <commande>`, le dossier isole les essais des vraies données.
+/// `mDESK --selftest <dossier de données> <commande>`, le dossier isole les essais des vraies données.
 @MainActor
 enum SelfTest {
     static func runIfRequested(_ arguments: [String]) -> Bool {

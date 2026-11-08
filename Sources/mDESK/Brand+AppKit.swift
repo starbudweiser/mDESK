@@ -1,5 +1,5 @@
 import AppKit
-import DeskStayCore
+import mDESKCore
 
 /// Couleur de la lettre minuscule du nom : l'ambre du logo (token Socle `action`), assombri en thème clair
 /// pour rester lisible (3:1 minimum sur `bg`).
