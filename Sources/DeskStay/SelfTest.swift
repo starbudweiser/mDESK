@@ -54,6 +54,51 @@ enum SelfTest {
         case "about":
             About.show()
             RunLoop.main.run(until: Date().addingTimeInterval(arguments.count > 4 ? Double(arguments[4]) ?? 4 : 4))
+        case "icontest":
+            // Déplace N icônes (chemin lent), puis mesure le « clic » : restauration des icônes mal placées.
+            let n = arguments.count > 4 ? Int(arguments[4]) ?? 10 : 10
+            guard let active = controller.activeArrangement else { print("ÉCHEC : aucun arrangement actif"); exit(1) }
+            let displays = Displays.current()
+            do {
+                let bridge = try FinderBridge()
+                let target = active.desktopIcons
+                let shifted = Array(target.prefix(n)).map { icon -> DesktopIcon in
+                    var moved = icon
+                    moved.position = NormalizedPoint(x: min(max(icon.position.x + 0.05, 0.02), 0.95), y: min(max(icon.position.y + 0.07, 0.02), 0.95))
+                    return moved
+                }
+                func timed<T>(_ label: String, _ block: () throws -> T) rethrows -> T {
+                    let t = Date(); let r = try block()
+                    print("  \(label) : \(Int(Date().timeIntervalSince(t) * 1000)) ms"); return r
+                }
+                _ = timed("lecture Bureau") { try? bridge.readDesktop(displays: displays) }
+                _ = timed("lecture Bureau (2e)") { try? bridge.readDesktop(displays: displays) }
+                _ = timed("déplacer 3 icônes") { try? bridge.restoreDesktop(Array(shifted.prefix(3)), displays: displays) }
+                var worst = 0.0
+                for run in 1...2 {
+                    _ = try bridge.restoreDesktop(shifted, displays: displays)
+                    RunLoop.main.run(until: Date().addingTimeInterval(2)) // laisse le Finder au repos : l'état d'avant le clic
+                    let start = Date()
+                    _ = controller.restore(active, parts: .icons)
+                    let ms = Date().timeIntervalSince(start) * 1000
+                    print("essai \(run) : \(Int(ms)) ms")
+                    worst = max(worst, ms)
+                }
+                let after = Dictionary(try bridge.readDesktop(displays: displays).map { ($0.name, $0) }, uniquingKeysWith: { a, _ in a })
+                var wrong = 0
+                for icon in target {
+                    guard let now = after[icon.name], let display = Geometry.targetDisplay(id: icon.displayID, in: displays) else { continue }
+                    let a = Geometry.denormalize(now.position, in: display.frame), b = Geometry.denormalize(icon.position, in: display.frame)
+                    if hypot(a.x - b.x, a.y - b.y) >= 3 { wrong += 1 }
+                }
+                let limit = n <= 10 ? 300.0 : 600.0 // « instantané au clic » : seuils mesurés avec marge
+                let ok = wrong == 0 && worst <= limit
+                print("icônes déplacées=\(n) mal placées après=\(wrong) pire clic=\(Int(worst)) ms (seuil \(Int(limit)) ms) → \(ok ? "OK" : "ÉCHEC")")
+                if !ok { exit(1) }
+            } catch {
+                print("ÉCHEC : \(error.localizedDescription)")
+                exit(1)
+            }
         case "events":
             runEvents(directory: store.directory)
         default:

@@ -88,8 +88,13 @@ final class FinderBridge {
             ys.append(Int(p.y.rounded()))
         }
         guard !names.isEmpty else { return 0 }
-        let result = try call("restoredesktop", .list(strings: names), .list(ints: xs), .list(ints: ys))
-        return Int(result.int32Value)
+        try call("freearrangement")
+        // Chemin rapide : événements bruts en parallèle ; ce qu'il ne place pas (disques…) repasse par AppleScript.
+        let fast = DesktopMover.move(names: names, xs: xs, ys: ys)
+        guard !fast.failed.isEmpty else { return fast.moved }
+        let rest = try call("restoredesktop", .list(strings: fast.failed.map { names[$0] }),
+                            .list(ints: fast.failed.map { xs[$0] }), .list(ints: fast.failed.map { ys[$0] }))
+        return fast.moved + Int(rest.int32Value)
     }
 
     /// Taille des icônes et du texte du Bureau (pour dessiner les copies animées à l'identique).
@@ -142,6 +147,7 @@ final class FinderBridge {
 
     // MARK: Appel de gestionnaire AppleScript
 
+    @discardableResult
     private func call(_ handler: String, _ args: NSAppleEventDescriptor...) throws -> NSAppleEventDescriptor {
         let params = NSAppleEventDescriptor.list()
         for arg in args { params.insert(arg, at: 0) } // 0 = ajout en fin de liste
@@ -180,12 +186,18 @@ final class FinderBridge {
         end tell
     end readDesktopStyle
 
-    on restoreDesktop(theNames, xs, ys)
-        set moved to 0
+    on freeArrangement()
         tell application "Finder"
             try
                 set arrangement of icon view options of window of desktop to not arranged
             end try
+        end tell
+        return 0
+    end freeArrangement
+
+    on restoreDesktop(theNames, xs, ys)
+        set moved to 0
+        tell application "Finder"
             repeat with i from 1 to count of theNames
                 set n to item i of theNames
                 set p to {item i of xs, item i of ys}

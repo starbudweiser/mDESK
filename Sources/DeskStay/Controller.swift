@@ -181,7 +181,8 @@ final class Controller {
                 let bridge = try finder()
                 // Le Finder met ~17 ms par icône : seules celles qui ne sont pas déjà en place sont déplacées.
                 let current = Dictionary(try bridge.readDesktop(displays: displays).map { ($0.name, $0) }, uniquingKeysWith: { a, _ in a })
-                let toMove = arrangement.desktopIcons.filter { icon in
+                let present = arrangement.desktopIcons.filter { current[$0.name] != nil } // une icône absente du Bureau ne se place pas
+                let toMove = present.filter { icon in
                     guard let now = current[icon.name], now.displayID == icon.displayID,
                           let display = Geometry.targetDisplay(id: icon.displayID, in: displays) else { return true }
                     let a = Geometry.denormalize(now.position, in: display.frame)
@@ -189,7 +190,7 @@ final class Controller {
                     return hypot(a.x - b.x, a.y - b.y) >= 3 // le Finder arrondit à l'entier
                 }
                 let moved = toMove.isEmpty ? 0 : try bridge.restoreDesktop(toMove, displays: displays)
-                report.done.append(L("ctl.iconsMoved", moved, arrangement.desktopIcons.count - toMove.count))
+                report.done.append(L("ctl.iconsMoved", moved, present.count - toMove.count))
             } catch {
                 report.problems.append(L("ctl.errDesktop", error.localizedDescription))
             }
