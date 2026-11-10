@@ -1,5 +1,7 @@
 # mDESK
 
+[![Listed on OpenMacApps](https://openmacapps.com/badge.svg)](https://openmacapps.com/apps/mdesk/)
+
 A menu-bar app for macOS that remembers and restores where things sit on your screens: **desktop icons** (like Desktop Icon Manager) and **application windows** (like Stay), per display combination.
 
 ## About
