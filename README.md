@@ -14,7 +14,7 @@ mDESK is a personal tool by **Starbudweiser & Claude Code (Anthropic)**, release
 
 mDESK is part of the **DESKTOP MAC TOOLKIT**, Starbudweiser's collection of macOS apps.
 
-![The mDESK About window, showing the app icon, version 1.0.2 and the DESKTOP MAC TOOLKIT collection.](docs/screenshot.png)
+![The mDESK menu open under its menu bar icon, with the active arrangement "Studio" for two displays and the commands to save and restore desktop icons and windows.](docs/screenshot.png)
 
 ## Features
 
