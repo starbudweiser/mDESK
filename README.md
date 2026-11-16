@@ -12,6 +12,8 @@ A menu-bar app for macOS that remembers and restores where things sit on your sc
 
 mDESK is a personal tool by **Starbudweiser & Claude Code (Anthropic)**, released under the MIT license. It merges the ideas of [Desktop Icon Manager](https://www.parker9.com/desktopIconManager4.html) and [Stay](https://cordlessdog.com/stay/) and is not affiliated with their authors. It is provided as is, without warranty. The same information is available in the app itself: menu bar icon › *About mDESK*.
 
+mDESK is part of the **DESKTOP MAC TOOLKIT**, Starbudweiser's collection of macOS apps.
+
 ## Features
 
 - **Desktop icons**: save and restore their positions (instantly, only the icons that moved), or hide them.
