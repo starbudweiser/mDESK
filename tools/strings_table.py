@@ -125,6 +125,7 @@ T = [
 ("about.authors", "Par Starbudweiser & Claude Code (Anthropic).", "By Starbudweiser & Claude Code (Anthropic).", "Por Starbudweiser y Claude Code (Anthropic).", "Di Starbudweiser e Claude Code (Anthropic)."),
 ("about.license", "Licence MIT. © 2026 Starbudweiser.", "MIT License. © 2026 Starbudweiser.", "Licencia MIT. © 2026 Starbudweiser.", "Licenza MIT. © 2026 Starbudweiser."),
 ("about.disclaimer", "Logiciel fourni « en l'état », sans garantie d'aucune sorte.", "Provided \"as is\", without warranty of any kind.", "Software proporcionado «tal cual», sin garantía de ningún tipo.", "Software fornito «così com'è», senza garanzie di alcun tipo."),
+("about.collection", "Fait partie du DESKTOP MAC TOOLKIT", "Part of the DESKTOP MAC TOOLKIT", "Forma parte del DESKTOP MAC TOOLKIT", "Fa parte del DESKTOP MAC TOOLKIT"),
 ("about.credit", "Inspiré de Desktop Icon Manager et de Stay, sans lien avec leurs auteurs.", "Inspired by Desktop Icon Manager and Stay, not affiliated with their authors.", "Inspirado en Desktop Icon Manager y Stay, sin relación con sus autores.", "Ispirato a Desktop Icon Manager e Stay, senza alcun legame con i loro autori."),
 ]
 INFOPLIST = [
