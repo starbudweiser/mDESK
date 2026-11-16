@@ -258,3 +258,33 @@ private extension JSONDecoder {
         return d
     }
 }
+
+/// Choix de la release et de l'archive pour la mise à jour automatique.
+final class UpdateLogicTests: XCTestCase {
+    private func json(tag: String, assets: [String], extra: String = "") -> Data {
+        let list = assets.map { "{\"name\":\"\($0)\",\"browser_download_url\":\"https://example.com/\($0)\"}" }.joined(separator: ",")
+        return Data("{\"tag_name\":\"\(tag)\"\(extra),\"assets\":[\(list)]}".utf8)
+    }
+
+    func testPicksReleaseZipAndChecksum() throws {
+        let r = try XCTUnwrap(UpdateRelease.parse(json(tag: "v1.0.2",
+            assets: ["mDESK-1.0.2-macOS-arm64.zip.sha256", "mDESK-1.0.2-macOS-arm64.zip"]), app: "mDESK"))
+        XCTAssertEqual(r.version, "1.0.2")
+        XCTAssertEqual(r.zipURL.lastPathComponent, "mDESK-1.0.2-macOS-arm64.zip")
+        XCTAssertEqual(r.sha256URL?.lastPathComponent, "mDESK-1.0.2-macOS-arm64.zip.sha256")
+    }
+
+    func testIgnoresDraftsPrereleasesAndMissingZip() {
+        XCTAssertNil(UpdateRelease.parse(json(tag: "v1.0.2", assets: ["mDESK-1.0.2-macOS-arm64.zip"], extra: ",\"prerelease\":true"), app: "mDESK"))
+        XCTAssertNil(UpdateRelease.parse(json(tag: "v1.0.2", assets: ["notes.txt"]), app: "mDESK"))
+    }
+
+    func testVersionCompareAndChecksum() {
+        XCTAssertTrue(VersionCompare.isNewer("v1.0.2", than: "1.0.1"))
+        XCTAssertTrue(VersionCompare.isNewer("1.10", than: "1.9.9"))
+        XCTAssertFalse(VersionCompare.isNewer("1.0.1", than: "1.0.1"))
+        let h = String(repeating: "ab", count: 32)
+        XCTAssertEqual(Checksum.parse("\(h)  mDESK.zip\n"), h)
+        XCTAssertNil(Checksum.parse("pas une empreinte"))
+    }
+}

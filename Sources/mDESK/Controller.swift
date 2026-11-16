@@ -15,6 +15,10 @@ final class Controller {
     private(set) var lastStatus = L("ctl.ready")
     private var finderBridge: FinderBridge?
     private var pendingAutoRestore: Task<Void, Never>?
+    private var restoring = false
+    private var autoRestoreWaiting = false
+    /// Vrai pendant une restauration, ou quand une restauration automatique est programmée : la mise à jour attend.
+    var isBusy: Bool { restoring || autoRestoreWaiting }
     private let log = Logger(subsystem: "com.stephan.mdesk", category: "controller")
 
     init(store: ArrangementStore) {
@@ -62,6 +66,8 @@ final class Controller {
     /// `onlyApp` : limite la partie « fenêtres d'applications » à une seule application (identifiant de paquet).
     func memorize(arrangementID: UUID?, newName: String?, purgeMissing: Bool,
                   parts: Parts = .all, onlyApp: String? = nil) -> Report {
+        restoring = true
+        defer { restoring = false }
         var report = Report()
         let displays = Displays.current()
         guard !displays.isEmpty else {
@@ -227,9 +233,11 @@ final class Controller {
     /// Regroupe les événements rapprochés (ex. plusieurs notifications d'écran) en une seule restauration.
     func scheduleAutoRestore(reason: String, after seconds: Double) {
         pendingAutoRestore?.cancel()
+        autoRestoreWaiting = true
         pendingAutoRestore = Task { @MainActor [weak self] in
             try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
             guard !Task.isCancelled, let self else { return }
+            self.autoRestoreWaiting = false
             self.autoRestore(reason: reason)
         }
     }

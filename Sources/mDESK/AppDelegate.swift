@@ -54,9 +54,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         } else {
             item.button?.title = "DS"
         }
+        // Jamais statusItem.menu : sur plusieurs écrans macOS ouvre le menu loin de l'icône. On l'ouvre nous-mêmes, sous l'icône.
         menu.delegate = self
-        item.menu = menu
+        item.button?.target = self
+        item.button?.action = #selector(statusItemClicked)
+        item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
         statusItem = item
+
+        let updater = Updater.shared
+        updater.isBusy = { [weak controller] in controller?.isBusy ?? false }
+        updater.onAvailable = { version in UpdateWindow.show(.available(version, current: Updater.shared.currentVersion), activate: false) }
+        updater.start()
 
         observeSystemEvents()
         if controller.settings.restoreAtLaunch {
@@ -107,6 +115,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     // MARK: Menu
+
+    @objc private func statusItemClicked() {
+        guard let button = statusItem?.button else { return }
+        menu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.isFlipped ? button.bounds.maxY + 4 : -4), in: button)
+    }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
@@ -160,6 +173,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(.separator())
         menu.addItem(autoRestoreItem())
         menu.addItem(loginItem())
+        let autoUpdate = ClosureMenuItem(L("menu.autoUpdate")) { Updater.shared.autoUpdate.toggle() }
+        autoUpdate.state = Updater.shared.autoUpdate ? .on : .off
+        menu.addItem(autoUpdate)
+        if let version = Updater.shared.availableVersion {
+            menu.addItem(ClosureMenuItem(L("menu.installUpdate", version), symbol: "arrow.down.circle") {
+                Task { await Updater.shared.install() }
+            })
+        }
+        menu.addItem(ClosureMenuItem(L("menu.checkUpdates")) { Task { await Updater.shared.check(manual: true) } })
         if !WindowBridge.isTrusted {
             menu.addItem(ClosureMenuItem(L("menu.allowAccessibility")) { [weak self] in self?.openAccessibility() })
         }

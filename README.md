@@ -14,7 +14,7 @@ mDESK is a personal tool by **Starbudweiser & Claude Code (Anthropic)**, release
 
 mDESK is part of the **DESKTOP MAC TOOLKIT**, Starbudweiser's collection of macOS apps.
 
-![The mDESK About window, showing the app icon, version 1.0.1 and the DESKTOP MAC TOOLKIT collection.](docs/screenshot.png)
+![The mDESK About window, showing the app icon, version 1.0.2 and the DESKTOP MAC TOOLKIT collection.](docs/screenshot.png)
 
 ## Features
 
@@ -22,6 +22,7 @@ mDESK is part of the **DESKTOP MAC TOOLKIT**, Starbudweiser's collection of macO
 - **Windows**: save and restore the position of Finder windows (never reopened if closed) and application windows, chosen app by app.
 - **Several arrangements**, picked automatically from the connected displays.
 - **Nothing automatic by default**; restoring on display change, wake or launch are opt-in options.
+- **Automatic updates**: checks GitHub releases once a day, verifies the Developer ID signature, and installs by itself (never during a restore). Menu: *Install updates automatically* (on by default) and *Check for updates…*.
 - Available in English, French, Spanish and Italian (follows the system language).
 
 ## Install
@@ -63,6 +64,7 @@ Appli de barre de menus pour macOS qui mémorise et restaure la place des élém
 - Icônes du bureau : enregistrer et restaurer leurs positions, ou les masquer.
 - Fenêtres : position des fenêtres du Finder et des applis choisies.
 - Plusieurs dispositions, choisies d'après les écrans branchés ; rien d'automatique par défaut.
+- Mise à jour automatique : recherche quotidienne dans les releases GitHub, vérification de la signature Developer ID, installation automatique au choix (jamais pendant une restauration) ; commandes « Installer automatiquement les mises à jour » et « Rechercher les mises à jour… » dans le menu.
 - Au premier usage, macOS demande deux autorisations : Automatisation (Finder) et Accessibilité (déplacer les fenêtres).
 
 Installation : téléchargez la [dernière version notarisée](https://github.com/starbudweiser/mDESK/releases/latest), décompressez-la et placez **mDESK.app** dans Applications (macOS 14 Sonoma ou plus récent).
