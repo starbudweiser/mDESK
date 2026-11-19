@@ -54,6 +54,7 @@ enum SelfTest {
         case "about":
             About.show()
             RunLoop.main.run(until: Date().addingTimeInterval(arguments.count > 4 ? Double(arguments[4]) ?? 4 : 4))
+            for w in NSApp.windows { print("fenêtre « \(w.title) » visible=\(w.isVisible) cadre=\(w.frame) alpha=\(w.alphaValue)") }
         case "icontest":
             // Déplace N icônes (chemin lent), puis mesure le « clic » : restauration des icônes mal placées.
             let n = arguments.count > 4 ? Int(arguments[4]) ?? 10 : 10
