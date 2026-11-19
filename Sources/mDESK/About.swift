@@ -1,5 +1,14 @@
 import AppKit
 import mDESKCore
+import SwiftUI
+
+/// Aplat de couleur dynamique (suit le thème clair/sombre), pour le fond et la barre de titre de la fenêtre.
+private final class FillView: NSView {
+    var fill: NSColor { didSet { needsDisplay = true } }
+    init(_ fill: NSColor) { self.fill = fill; super.init(frame: .zero) }
+    required init?(coder: NSCoder) { fatalError() }
+    override func draw(_ dirtyRect: NSRect) { fill.setFill(); dirtyRect.fill() }
+}
 
 /// Fenêtre « À propos » : version, auteurs, licence. Textes dans les fichiers de langue (L).
 /// Fenêtre à nous plutôt que le panneau standard, dont la zone de texte a une hauteur fixe qui rogne les textes longs.
@@ -12,7 +21,10 @@ enum About {
 
     static func show() {
         if window == nil { window = makeWindow() }
-        window?.center()
+        if let host = NSApp.windows.first(where: { $0 !== window && $0.isVisible && $0.canBecomeMain }), let w = window {
+            let f = host.frame
+            w.setFrameOrigin(NSPoint(x: f.midX - w.frame.width / 2, y: f.midY - w.frame.height / 2))
+        } else { window?.center() }
         window?.present()
     }
 
@@ -24,7 +36,7 @@ enum About {
         // Lettre minuscule du nom en couleur (règle Socle « Nom de l'appli »)
         field.attributedStringValue = BrandStyle.colored(NSAttributedString(string: text, attributes: [
             .font: font, .paragraphStyle: paragraph,
-            .foregroundColor: secondary ? NSColor.secondaryLabelColor : NSColor.labelColor]))
+            .foregroundColor: secondary ? NSColor(Socle.C.textMuted) : (bold ? NSColor(Socle.C.textStrong) : NSColor(Socle.C.text))]))
         field.alignment = .center
         field.preferredMaxLayoutWidth = textWidth
         field.isSelectable = false
@@ -67,13 +79,25 @@ enum About {
         // Largeur fixée : le texte garde ses marges de chaque côté quelle que soit la langue.
         stack.widthAnchor.constraint(equalToConstant: textWidth + 2 * sideMargin).isActive = true
 
-        let window = NSWindow(contentRect: .zero, styleMask: [.titled, .closable], backing: .buffered, defer: false)
+        let window = NSWindow(contentRect: .zero, styleMask: [.titled, .closable, .fullSizeContentView], backing: .buffered, defer: false)
         window.title = L("about.menu")
         window.isReleasedWhenClosed = false
-        let content = NSView()
-        content.addSubview(stack)
+        window.titlebarAppearsTransparent = true
+        window.titleVisibility = .hidden
+        window.standardWindowButton(.miniaturizeButton)?.isHidden = true   // bouton de fermeture seul
+        window.standardWindowButton(.zoomButton)?.isHidden = true
+        window.backgroundColor = NSColor(Socle.C.bg)
+        let content = FillView(NSColor(Socle.C.bg))
+        // Barre de titre Socle : 30px `surfaceRaised`, filet `border` dessous
+        let bar = FillView(NSColor(Socle.C.surfaceRaised)); bar.translatesAutoresizingMaskIntoConstraints = false
+        let rule = FillView(NSColor(Socle.C.border)); rule.translatesAutoresizingMaskIntoConstraints = false
+        content.addSubview(stack); content.addSubview(bar); bar.addSubview(rule)
         NSLayoutConstraint.activate([
-            stack.topAnchor.constraint(equalTo: content.topAnchor),
+            bar.topAnchor.constraint(equalTo: content.topAnchor), bar.leadingAnchor.constraint(equalTo: content.leadingAnchor),
+            bar.trailingAnchor.constraint(equalTo: content.trailingAnchor), bar.heightAnchor.constraint(equalToConstant: 30),
+            rule.leadingAnchor.constraint(equalTo: bar.leadingAnchor), rule.trailingAnchor.constraint(equalTo: bar.trailingAnchor),
+            rule.bottomAnchor.constraint(equalTo: bar.bottomAnchor), rule.heightAnchor.constraint(equalToConstant: 1),
+            stack.topAnchor.constraint(equalTo: bar.bottomAnchor),
             stack.leadingAnchor.constraint(equalTo: content.leadingAnchor),
             stack.trailingAnchor.constraint(equalTo: content.trailingAnchor),
             stack.bottomAnchor.constraint(equalTo: content.bottomAnchor),
