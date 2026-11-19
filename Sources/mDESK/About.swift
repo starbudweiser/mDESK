@@ -19,10 +19,24 @@ enum About {
     private static let sideMargin: CGFloat = 28
     private static let textWidth: CGFloat = 300
 
+    /// Centrage (règle Socle « Fenêtres secondaires centrées ») : appli à fenêtres (Dock) → au centre de sa fenêtre visible ;
+    /// appli de barre de menus sans fenêtre (`.accessory`) → au centre de l'écran du pointeur, jamais sur une fenêtre de fond.
+    private static func centerWindow(_ w: NSWindow) {
+        if NSApp.activationPolicy() == .regular,
+           let host = NSApp.windows.first(where: { $0 !== w && $0.isVisible && $0.canBecomeMain }) {
+            let f = host.frame
+            w.setFrameOrigin(NSPoint(x: f.midX - w.frame.width / 2, y: f.midY - w.frame.height / 2))
+            return
+        }
+        let mouse = NSEvent.mouseLocation
+        let screen = NSScreen.screens.first(where: { NSMouseInRect(mouse, $0.frame, false) }) ?? NSScreen.main ?? NSScreen.screens[0]
+        let v = screen.visibleFrame
+        w.setFrameOrigin(NSPoint(x: v.midX - w.frame.width / 2, y: v.midY - w.frame.height / 2))
+    }
+
     static func show() {
         if window == nil { window = makeWindow() }
-        // Appli de barre de menus : pas de fenêtre principale sur laquelle se centrer (les fenêtres de fond du masquage seraient prises pour hôtes).
-        window?.center()
+        if let w = window { centerWindow(w) }
         window?.present()
     }
 
