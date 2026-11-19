@@ -2,12 +2,14 @@ import AppKit
 import mDESKCore
 import SwiftUI
 
-/// Aplat de couleur dynamique (suit le thème clair/sombre), pour le fond et la barre de titre de la fenêtre.
+/// Aplat de couleur dynamique (suit le thème clair/sombre de l'appli).
 private final class FillView: NSView {
-    var fill: NSColor { didSet { needsDisplay = true } }
-    init(_ fill: NSColor) { self.fill = fill; super.init(frame: .zero) }
+    let fill: NSColor
+    init(_ fill: NSColor) { self.fill = fill; super.init(frame: .zero); wantsLayer = true }
     required init?(coder: NSCoder) { fatalError() }
-    override func draw(_ dirtyRect: NSRect) { fill.setFill(); dirtyRect.fill() }
+    override var wantsUpdateLayer: Bool { true }
+    override func updateLayer() { effectiveAppearance.performAsCurrentDrawingAppearance { layer?.backgroundColor = fill.cgColor } }
+    override func viewDidChangeEffectiveAppearance() { needsDisplay = true }
 }
 
 /// Fenêtre « À propos » : version, auteurs, licence. Textes dans les fichiers de langue (L).
